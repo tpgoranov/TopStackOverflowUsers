@@ -10,17 +10,31 @@ import UIKit
 @MainActor
 final class TopUsersTableViewController: UITableViewController {
     private let viewModel: TopUsersViewModel
+    private let errorStateLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Server Unreachable"
+        label.textAlignment = .center
+        label.textColor = .secondaryLabel
+        label.font = .preferredFont(forTextStyle: .headline)
+        label.numberOfLines = 0
+        label.isHidden = true
+        return label
+    }()
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
-        self.viewModel = TopUsersViewModel()
+        self.viewModel = TopUsersViewModel(
+            dataFetcher: TopUsersDataLoader(),
+            avatarRepository: AvatarRepository()
+        )
         super.init(coder: coder)
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        title = "Top Users"
+        title = "Top StackOverflow Users"
+        tableView.backgroundView = errorStateLabel
         bindViewModel()
         viewModel.configureDataSource(for: tableView)
         viewModel.configureFetchedResultsController()
@@ -28,8 +42,17 @@ final class TopUsersTableViewController: UITableViewController {
     }
 
     private func bindViewModel() {
-        viewModel.onError = { error in
-            print(error)
+        viewModel.onStateChanged = { [weak self] state in
+            self?.render(state)
+        }
+    }
+
+    private func render(_ state: TopUsersViewState) {
+        switch state {
+        case .content:
+            errorStateLabel.isHidden = true
+        case .serverUnreachable:
+            errorStateLabel.isHidden = false
         }
     }
 }

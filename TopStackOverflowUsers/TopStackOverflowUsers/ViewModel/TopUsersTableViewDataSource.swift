@@ -12,18 +12,24 @@ import CoreData
 final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDelegate {
     private let tableView: UITableView
     private let fetchedResultsController: NSFetchedResultsController<StackOverflowUser>
+    private let imageProvider: (StackOverflowUser) -> UIImage?
     private let onImageRequested: (StackOverflowUser) -> Void
+    private let onFollowRequested: (StackOverflowUser) -> Void
     private lazy var dataSource = makeDataSource()
     private var reloadedObjectIDs = Set<NSManagedObjectID>()
 
     init(
         tableView: UITableView,
         fetchedResultsController: NSFetchedResultsController<StackOverflowUser>,
-        onImageRequested: @escaping (StackOverflowUser) -> Void
+        imageProvider: @escaping (StackOverflowUser) -> UIImage?,
+        onImageRequested: @escaping (StackOverflowUser) -> Void,
+        onFollowRequested: @escaping (StackOverflowUser) -> Void
     ) {
         self.tableView = tableView
         self.fetchedResultsController = fetchedResultsController
+        self.imageProvider = imageProvider
         self.onImageRequested = onImageRequested
+        self.onFollowRequested = onFollowRequested
         super.init()
         self.fetchedResultsController.delegate = self
         tableView.dataSource = dataSource
@@ -39,12 +45,24 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
         reloadedObjectIDs.removeAll()
     }
 
+    func applyReloadSnapshot() {
+        applySnapshot(animatingDifferences: true)
+        reloadedObjectIDs.removeAll()
+    }
+
+    func applyEmptySnapshot() {
+        reloadedObjectIDs.removeAll()
+        var snapshot = NSDiffableDataSourceSnapshot<Int, NSManagedObjectID>()
+        snapshot.appendSections([0])
+        dataSource.apply(snapshot, animatingDifferences: false)
+    }
+
     func reloadObject(_ user: StackOverflowUser) {
         reloadedObjectIDs.insert(user.objectID)
     }
 
     private func makeDataSource() -> UITableViewDiffableDataSource<Int, NSManagedObjectID> {
-        UITableViewDiffableDataSource(tableView: tableView) { [weak self] tableView, indexPath, _ in
+        let dataSource = UITableViewDiffableDataSource<Int, NSManagedObjectID>(tableView: tableView) { [weak self] tableView, indexPath, _ in
             guard
                 let self,
                 let cell = tableView.dequeueReusableCell(
@@ -56,8 +74,10 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
             }
 
             let user = fetchedResultsController.object(at: indexPath)
-            let image = user.image.flatMap(UIImage.init(data:))
-            cell.configure(with: user, image: image)
+            let image = imageProvider(user)
+            cell.configure(with: user, image: image) { [weak self] in
+                self?.onFollowRequested(user)
+            }
 
             if image == nil {
                 onImageRequested(user)
@@ -65,6 +85,9 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
 
             return cell
         }
+
+        dataSource.defaultRowAnimation = .fade
+        return dataSource
     }
 
     private func applySnapshot(animatingDifferences: Bool) {

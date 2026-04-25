@@ -3,7 +3,7 @@
     <entity name="StackOverflowUser" representedClassName="StackOverflowUser" syncable="YES" codeGenerationType="class">
         <attribute name="accountId" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="displayName" optional="YES" attributeType="String"/>
-        <attribute name="image" optional="YES" attributeType="Binary"/>
+        <attribute name="isFollowed" optional="YES" attributeType="Boolean" usesScalarValueType="YES"/>
         <attribute name="profileImageURL" optional="YES" attributeType="String"/>
         <attribute name="reputation" optional="YES" attributeType="Integer 64" defaultValueString="0" usesScalarValueType="YES"/>
     </entity>

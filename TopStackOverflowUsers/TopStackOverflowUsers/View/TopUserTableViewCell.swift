@@ -14,6 +14,8 @@ final class TopUserTableViewCell: UITableViewCell {
     private let nameLabel = UILabel()
     private let reputationLabel = UILabel()
     private let labelsStackView = UIStackView()
+    private let followButton = UIButton(type: .system)
+    private var onFollowButtonTapped: (() -> Void)?
 
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
@@ -25,15 +27,18 @@ final class TopUserTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func configure(with user: StackOverflowUser, image: UIImage?) {
+    func configure(with user: StackOverflowUser, image: UIImage?, onFollowButtonTapped: @escaping () -> Void) {
         nameLabel.text = user.displayName
         reputationLabel.text = "Reputation: \(user.reputation)"
         avatarImageView.image = image
+        self.onFollowButtonTapped = onFollowButtonTapped
+        updateFollowButton(isFollowed: user.isFollowed)
     }
 
     override func prepareForReuse() {
         super.prepareForReuse()
         avatarImageView.image = nil
+        onFollowButtonTapped = nil
     }
 
     func updateAvatarImage(_ image: UIImage?) {
@@ -60,10 +65,23 @@ final class TopUserTableViewCell: UITableViewCell {
         labelsStackView.spacing = 4
         labelsStackView.translatesAutoresizingMaskIntoConstraints = false
 
+        followButton.translatesAutoresizingMaskIntoConstraints = false
+        var followButtonConfiguration = UIButton.Configuration.filled()
+        followButtonConfiguration.buttonSize = .small
+        followButtonConfiguration.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 10, bottom: 6, trailing: 10)
+        followButton.configuration = followButtonConfiguration
+        followButton.titleLabel?.font = .preferredFont(forTextStyle: .caption1)
+        followButton.setContentHuggingPriority(.required, for: .horizontal)
+        followButton.setContentCompressionResistancePriority(.required, for: .horizontal)
+        followButton.layer.cornerRadius = 6
+        followButton.clipsToBounds = true
+        followButton.addTarget(self, action: #selector(didTapFollowButton), for: .touchUpInside)
+
         labelsStackView.addArrangedSubview(nameLabel)
         labelsStackView.addArrangedSubview(reputationLabel)
         contentView.addSubview(avatarImageView)
         contentView.addSubview(labelsStackView)
+        contentView.addSubview(followButton)
     }
 
     private func configureLayout() {
@@ -74,8 +92,22 @@ final class TopUserTableViewCell: UITableViewCell {
             avatarImageView.heightAnchor.constraint(equalTo: avatarImageView.widthAnchor),
             labelsStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
             labelsStackView.leadingAnchor.constraint(equalTo: avatarImageView.trailingAnchor, constant: 12),
-            labelsStackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            labelsStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12)
+            labelsStackView.trailingAnchor.constraint(equalTo: followButton.leadingAnchor, constant: -12),
+            labelsStackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
+            followButton.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            followButton.centerYAnchor.constraint(equalTo: contentView.centerYAnchor)
         ])
+    }
+
+    private func updateFollowButton(isFollowed: Bool) {
+        var configuration = followButton.configuration ?? .filled()
+        configuration.title = isFollowed ? "Unfollow" : "Follow"
+        configuration.cornerStyle = .fixed
+        followButton.configuration = configuration
+    }
+
+    @objc
+    private func didTapFollowButton() {
+        onFollowButtonTapped?()
     }
 }

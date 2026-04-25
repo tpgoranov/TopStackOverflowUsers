@@ -10,7 +10,6 @@ import CoreData
 
 protocol TopUserDataFetching {
     func fetchTopUsers() async throws
-    func fetchImage(forUserID userID: Int) async throws
     func makeUsersFetchedResultsController() -> NSFetchedResultsController<StackOverflowUser>
 }
 
@@ -31,28 +30,6 @@ final class TopUsersDataLoader: TopUserDataFetching {
         let context = persistentContainer.newBackgroundContext()
         try await context.perform {
             try StackOverflowUser.store(fetchedUsers, in: context)
-        }
-    }
-
-    func fetchImage(forUserID userID: Int) async throws {
-        let viewContext = persistentContainer.viewContext
-
-        guard let managedUser = try StackOverflowUser.fetchUser(withAccountID: userID, in: viewContext) else {
-            return
-        }
-
-        if managedUser.image != nil {
-            return
-        }
-
-        guard let imageURLString = try StackOverflowUser.profileImageURL(forAccountID: userID, in: viewContext) else {
-            return
-        }
-
-        let imageData = try await userProvider.downloadImage(from: imageURLString)
-        let backgroundContext = persistentContainer.newBackgroundContext()
-        try await backgroundContext.perform {
-            try StackOverflowUser.storeImageData(imageData, forAccountID: userID, in: backgroundContext)
         }
     }
 

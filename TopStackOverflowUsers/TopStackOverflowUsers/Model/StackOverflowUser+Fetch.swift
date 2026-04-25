@@ -26,10 +26,7 @@ extension StackOverflowUser {
             let managedUser = try fetchUser(withAccountID: user.accountId, in: context)
                 ?? StackOverflowUser(context: context)
 
-            managedUser.accountId = Int64(user.accountId)
-            managedUser.displayName = user.displayName
-            managedUser.profileImageURL = user.profileImage
-            managedUser.reputation = Int64(user.reputation)
+            managedUser.applyChanges(from: user)
         }
 
         if context.hasChanges {
@@ -37,27 +34,27 @@ extension StackOverflowUser {
         }
     }
 
-    static func imageData(forAccountID accountID: Int, in context: NSManagedObjectContext) throws -> Data? {
-        try fetchUser(withAccountID: accountID, in: context)?.image
+    func applyChanges(from user: TopUser) {
+        let accountID = Int64(user.accountId)
+        if accountId != accountID {
+            accountId = accountID
+        }
+
+        if displayName != user.displayName {
+            displayName = user.displayName
+        }
+
+        if profileImageURL != user.profileImage {
+            profileImageURL = user.profileImage
+        }
+
+        let reputation = Int64(user.reputation)
+        if self.reputation != reputation {
+            self.reputation = reputation
+        }
     }
 
     static func profileImageURL(forAccountID accountID: Int, in context: NSManagedObjectContext) throws -> String? {
         try fetchUser(withAccountID: accountID, in: context)?.profileImageURL
-    }
-
-    static func storeImageData(
-        _ imageData: Data,
-        forAccountID accountID: Int,
-        in context: NSManagedObjectContext
-    ) throws {
-        guard let managedUser = try fetchUser(withAccountID: accountID, in: context) else {
-            return
-        }
-
-        managedUser.image = imageData
-
-        if context.hasChanges {
-            try context.save()
-        }
     }
 }
