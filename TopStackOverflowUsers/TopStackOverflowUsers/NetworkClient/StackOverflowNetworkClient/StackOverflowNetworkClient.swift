@@ -9,6 +9,7 @@ import Foundation
 
 protocol StackOverflowUserProviding {
     func fetchTopUsers() async throws -> [TopUser]
+    func downloadImage(from imageURLString: String) async throws -> Data
 }
 
 final class StackOverflowNetwokClient: StackOverflowUserProviding {
@@ -21,5 +22,11 @@ final class StackOverflowNetwokClient: StackOverflowUserProviding {
     func fetchTopUsers() async throws -> [TopUser] {
         let response: TopUsersResponse = try await networkClient.performRequest(StackOverflowFetchEndpoint())
         return response.items
+    }
+
+    func downloadImage(from imageURLString: String) async throws -> Data {
+        try await networkClient.performDataRequest(
+            StackOverflowDownloadImageEndpoint(imageURLString: imageURLString)
+        )
     }
 }

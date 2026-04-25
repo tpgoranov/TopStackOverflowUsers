@@ -17,6 +17,7 @@ enum AppNetworkClientError: Error {
 
 protocol NetworkRequestPerforming {
     func performRequest<T: Decodable>(_ endpoint: Endpoint) async throws -> T
+    func performDataRequest(_ endpoint: Endpoint) async throws -> Data
 }
 
 final class AppNetworkClient: NetworkRequestPerforming {
@@ -44,6 +45,16 @@ final class AppNetworkClient: NetworkRequestPerforming {
     }
 
     func performRequest<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
+        let data = try await performDataRequest(endpoint)
+
+        do {
+            return try decoder.decode(T.self, from: data)
+        } catch {
+            throw AppNetworkClientError.decodingFailed
+        }
+    }
+
+    func performDataRequest(_ endpoint: Endpoint) async throws -> Data {
         let urlRequest = try createURLRequest(from: endpoint)
         let data: Data
         let response: URLResponse
@@ -63,10 +74,6 @@ final class AppNetworkClient: NetworkRequestPerforming {
             throw AppNetworkClientError.invalidURLResponse
         }
 
-        do {
-            return try decoder.decode(T.self, from: data)
-        } catch {
-            throw AppNetworkClientError.decodingFailed
-        }
+        return data
     }
 }
