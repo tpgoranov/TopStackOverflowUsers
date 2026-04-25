@@ -14,7 +14,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        let stackOverflowNetworkClient = StackOverflowNetwokClient()
+        Task {
+            do {
+                let users = try await stackOverflowNetworkClient.fetchTopUsers()
+                print(users)
+            } catch {
+                print(error)
+            }
+        }
         return true
     }
 
