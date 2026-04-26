@@ -8,6 +8,12 @@
 import XCTest
 
 final class TopStackOverflowUsersUITests: XCTestCase {
+    private func makeApp() -> XCUIApplication {
+        let app = XCUIApplication()
+        app.launchArguments.append("--ui-testing-mock-users")
+        app.launchArguments.append("--ui-testing-reset-store")
+        return app
+    }
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -23,21 +29,24 @@ final class TopStackOverflowUsersUITests: XCTestCase {
     }
 
     @MainActor
-    func testExample() throws {
-        // UI tests must launch the application that they test.
-        let app = XCUIApplication()
+    func testTappingFollowButtonChangesTitleToUnfollow() throws {
+        let app = makeApp()
         app.launch()
 
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-        // XCUIAutomation Documentation
-        // https://developer.apple.com/documentation/xcuiautomation
+        let followButton = app.buttons["Follow"].firstMatch
+        XCTAssertTrue(followButton.waitForExistence(timeout: 5))
+
+        followButton.tap()
+
+        let unfollowButton = app.buttons["Unfollow"].firstMatch
+        XCTAssertTrue(unfollowButton.waitForExistence(timeout: 2))
     }
 
     @MainActor
     func testLaunchPerformance() throws {
         // This measures how long it takes to launch your application.
         measure(metrics: [XCTApplicationLaunchMetric()]) {
-            XCUIApplication().launch()
+            makeApp().launch()
         }
     }
 }

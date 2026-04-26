@@ -23,8 +23,15 @@ final class TopUsersTableViewController: UITableViewController {
 
     @available(*, unavailable)
     required init?(coder: NSCoder) {
+        let userProvider: StackOverflowUserProviding
+        if ProcessInfo.processInfo.arguments.contains("--ui-testing-mock-users") {
+            userProvider = MockStackOverflowNetworkClient()
+        } else {
+            userProvider = StackOverflowNetwokClient()
+        }
+
         self.viewModel = TopUsersViewModel(
-            dataFetcher: TopUsersDataLoader(),
+            dataFetcher: TopUsersDataLoader(userProvider: userProvider),
             avatarRepository: AvatarRepository()
         )
         super.init(coder: coder)

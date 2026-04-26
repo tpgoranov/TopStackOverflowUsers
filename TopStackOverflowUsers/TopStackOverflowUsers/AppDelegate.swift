@@ -10,10 +10,14 @@ import CoreData
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
-
+    private static let persistentStoreName = "TopStackOverflowUsers"
+    private static let resetStoreLaunchArgument = "--ui-testing-reset-store"
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+        if ProcessInfo.processInfo.arguments.contains(Self.resetStoreLaunchArgument) {
+            resetPersistentStoreIfNeeded()
+        }
         return true
     }
 
@@ -40,7 +44,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
          application to it. This property is optional since there are legitimate
          error conditions that could cause the creation of the store to fail.
         */
-        let container = NSPersistentContainer(name: "TopStackOverflowUsers")
+        let container = NSPersistentContainer(name: Self.persistentStoreName)
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
             if let error = error as NSError? {
                 // Replace this implementation with code to handle the error appropriately.
@@ -60,6 +64,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         container.viewContext.automaticallyMergesChangesFromParent = true
         return container
     }()
+
+    private func resetPersistentStoreIfNeeded() {
+        let container = NSPersistentContainer(name: Self.persistentStoreName)
+
+        guard
+            let storeDescription = container.persistentStoreDescriptions.first,
+            let storeURL = storeDescription.url
+        else {
+            return
+        }
+
+        guard FileManager.default.fileExists(atPath: storeURL.path) else {
+            return
+        }
+
+        let coordinator = container.persistentStoreCoordinator
+
+        do {
+            try coordinator.destroyPersistentStore(
+                at: storeURL,
+                ofType: storeDescription.type,
+                options: storeDescription.options
+            )
+        } catch {
+            print("Failed to reset persistent store: \(error)")
+        }
+    }
 
     // MARK: - Core Data Saving support
 
