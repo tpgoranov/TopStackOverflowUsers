@@ -39,7 +39,7 @@ final class TopUsersViewModel {
                 self?.fetchImage(for: user)
             },
             onFollowRequested: { [weak self] user in
-                self?.toggleFollowState(for: user)
+                self?.dataFetcher.toggleFollowState(for: user.objectID)
             }
         )
     }
@@ -74,7 +74,7 @@ final class TopUsersViewModel {
             do {
                 _ = try await avatarRepository.fetchImage(for: imageURLString)
                 dataSource?.reloadObject(user)
-                dataSource?.applyReloadSnapshot()
+                dataSource?.applyAnimatedSnapshot()
             } catch {
                 log(error)
             }
@@ -89,25 +89,6 @@ final class TopUsersViewModel {
         }
 
         return avatarRepository.cachedImage(for: imageURLString)
-    }
-
-    private func toggleFollowState(for user: StackOverflowUser) {
-        guard let context = user.managedObjectContext else {
-            return
-        }
-
-        user.isFollowed.toggle()
-
-        do {
-            if context.hasChanges {
-                try context.save()
-            }
-        } catch {
-            context.rollback()
-            dataSource?.reloadObject(user)
-            dataSource?.applyReloadSnapshot()
-            log(error)
-        }
     }
 
     private func handle(_ error: Error) {

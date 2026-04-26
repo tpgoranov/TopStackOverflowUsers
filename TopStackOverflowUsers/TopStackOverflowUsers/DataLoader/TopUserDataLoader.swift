@@ -11,6 +11,7 @@ import CoreData
 protocol TopUserDataFetching {
     func fetchTopUsers() async throws
     func makeUsersFetchedResultsController() -> NSFetchedResultsController<StackOverflowUser>
+    func toggleFollowState(for objectID: NSManagedObjectID)
 }
 
 final class TopUsersDataLoader: TopUserDataFetching {
@@ -40,6 +41,25 @@ final class TopUsersDataLoader: TopUserDataFetching {
             sectionNameKeyPath: nil,
             cacheName: nil
         )
+    }
+
+    func toggleFollowState(for objectID: NSManagedObjectID) {
+        let context = persistentContainer.viewContext
+
+        do {
+            guard let user = try context.existingObject(with: objectID) as? StackOverflowUser else {
+                return
+            }
+
+            user.isFollowed.toggle()
+
+            if context.hasChanges {
+                try context.save()
+            }
+        } catch {
+            context.rollback()
+            print("Core Data error: \(error)")
+        }
     }
 
     private static func defaultPersistentContainer() -> NSPersistentContainer {

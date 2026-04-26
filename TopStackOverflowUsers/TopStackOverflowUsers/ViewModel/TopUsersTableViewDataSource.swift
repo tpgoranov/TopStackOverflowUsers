@@ -40,12 +40,7 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
         applySnapshot(animatingDifferences: false)
     }
 
-    func applyUpdatedSnapshot() {
-        applySnapshot(animatingDifferences: true)
-        reloadedObjectIDs.removeAll()
-    }
-
-    func applyReloadSnapshot() {
+    func applyAnimatedSnapshot() {
         applySnapshot(animatingDifferences: true)
         reloadedObjectIDs.removeAll()
     }
@@ -105,7 +100,7 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
     }
 
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {
-        applyUpdatedSnapshot()
+        applyAnimatedSnapshot()
     }
 
     func controller(
