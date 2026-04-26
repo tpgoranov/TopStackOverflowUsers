@@ -1,5 +1,5 @@
 //
-//  TopUserImageStore.swift
+//  ImageStore.swift
 //  TopStackOverflowUsers
 //
 //  Created by Todor Goranov on 26/04/2026.
@@ -8,12 +8,13 @@
 import Foundation
 import CryptoKit
 
-protocol TopUserImageStoring {
+protocol ImageStoring {
     func imageData(for imageURLString: String) -> Data?
     func storeImageData(_ imageData: Data, for imageURLString: String) throws
+    func removeImageData(for imageURLString: String) throws
 }
 
-final class TopUserImageStore: TopUserImageStoring {
+final class ImageStore: ImageStoring {
     private let directoryURL: URL
     private let fileManager: FileManager
 
@@ -35,6 +36,14 @@ final class TopUserImageStore: TopUserImageStoring {
         try createDirectoryIfNeeded()
         let fileURL = fileURL(for: imageURLString)
         try imageData.write(to: fileURL, options: .atomic)
+    }
+
+    func removeImageData(for imageURLString: String) throws {
+        let fileURL = fileURL(for: imageURLString)
+
+        if fileManager.fileExists(atPath: fileURL.path) {
+            try fileManager.removeItem(at: fileURL)
+        }
     }
 
     private func createDirectoryIfNeeded() throws {

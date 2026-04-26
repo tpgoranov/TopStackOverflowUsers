@@ -13,12 +13,12 @@ protocol AvatarRepositorying {
 }
 
 final class AvatarRepository: AvatarRepositorying {
-    private let imageStore: TopUserImageStoring
+    private let imageStore: ImageStoring
     private let networkClient: NetworkRequestPerforming
     private let memoryCache = NSCache<NSString, UIImage>()
 
     init(
-        imageStore: TopUserImageStoring = TopUserImageStore(),
+        imageStore: ImageStoring = ImageStore(),
         networkClient: NetworkRequestPerforming = AppNetworkClient()
     ) {
         memoryCache.countLimit = 20
