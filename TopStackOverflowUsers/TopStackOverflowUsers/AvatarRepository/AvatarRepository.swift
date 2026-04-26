@@ -38,7 +38,7 @@ final class AvatarRepository: AvatarRepositorying {
             return nil
         }
 
-        memoryCache.setObject(image, forKey: cacheKey)
+        memoryCache.setObject(image, forKey: imageURLString as NSString)
         return image
     }
 
