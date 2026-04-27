@@ -1,7 +1,7 @@
 # TopStackOverflowUsers
 An App to fetch and display a list of Stack Overflow Users, listed by ranking .
 Each of the Users has Avatar which is lazy loaded. 
-The App Supports core data caching and Images Caching 
+The App Supports core data caching and Images Caching .
 Users can be followed and unfollowed
 
 StackOverflow Users App Solution
