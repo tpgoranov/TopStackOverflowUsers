@@ -8,12 +8,14 @@
 import CoreData
 
 extension StackOverflowUser {
+    // Make the fetch request used for the users list.
     static func usersFetchRequest() -> NSFetchRequest<StackOverflowUser> {
         let fetchRequest = StackOverflowUser.fetchRequest()
         fetchRequest.sortDescriptors = [NSSortDescriptor(key: "reputation", ascending: false)]
         return fetchRequest
     }
 
+    // Find one user by account id.
     static func fetchUser(withAccountID accountID: Int, in context: NSManagedObjectContext) throws -> StackOverflowUser? {
         let fetchRequest = StackOverflowUser.fetchRequest()
         fetchRequest.fetchLimit = 1
@@ -21,6 +23,7 @@ extension StackOverflowUser {
         return try context.fetch(fetchRequest).first
     }
 
+    // Save or update the downloaded users.
     static func store(_ users: [TopUser], in context: NSManagedObjectContext) throws {
         for user in users {
             let managedUser = try fetchUser(withAccountID: user.accountId, in: context)
@@ -34,6 +37,7 @@ extension StackOverflowUser {
         }
     }
 
+    // Copy response values into the managed object.
     func applyChanges(from user: TopUser) {
         let accountID = Int64(user.accountId)
         if accountId != accountID {
@@ -52,9 +56,5 @@ extension StackOverflowUser {
         if self.reputation != reputation {
             self.reputation = reputation
         }
-    }
-
-    static func profileImageURL(forAccountID accountID: Int, in context: NSManagedObjectContext) throws -> String? {
-        try fetchUser(withAccountID: accountID, in: context)?.profileImageURL
     }
 }

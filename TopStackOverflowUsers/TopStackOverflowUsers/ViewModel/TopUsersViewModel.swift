@@ -28,6 +28,7 @@ final class TopUsersViewModel {
         self.avatarRepository = avatarRepository
     }
 
+    // Build the table data source in a declarative functional way
     func configureDataSource(for tableView: UITableView) {
         dataSource = TopUsersTableViewDataSource(
             tableView: tableView,
@@ -44,6 +45,7 @@ final class TopUsersViewModel {
         )
     }
 
+    // Start loading users from remote.
     func fetchDataFromRemote() {
         Task {
             do {
@@ -55,6 +57,7 @@ final class TopUsersViewModel {
         }
     }
 
+    // Do the first fetch from Core Data for the table.
     func configureFetchedResultsController() {
         do {
             try fetchedResultsController.performFetch()
@@ -65,6 +68,7 @@ final class TopUsersViewModel {
         }
     }
 
+    // Download one missing image and refresh the row when completed.
     private func fetchImage(for user: StackOverflowUser) {
         guard let imageURLString = user.profileImageURL else {
             return
@@ -81,6 +85,7 @@ final class TopUsersViewModel {
         }
     }
 
+    // Read an image from the repository cache.
     private func image(for user: StackOverflowUser) -> UIImage? {
         guard
             let imageURLString = user.profileImageURL
@@ -91,12 +96,14 @@ final class TopUsersViewModel {
         return avatarRepository.cachedImage(for: imageURLString)
     }
 
+    // Handle error state when loading failed. Change ViewController State
     private func handle(_ error: Error) {
         log(error)
         dataSource?.applyEmptySnapshot()
         onStateChanged?(.serverUnreachable)
     }
 
+    // Print simple error info for debugging.
     private func log(_ error: Error) {
         if let networkError = error as? AppNetworkClientError {
             switch networkError {

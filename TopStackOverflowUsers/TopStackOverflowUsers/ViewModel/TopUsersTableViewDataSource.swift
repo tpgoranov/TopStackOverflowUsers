@@ -36,15 +36,18 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
         tableView.register(TopUserTableViewCell.self, forCellReuseIdentifier: TopUserTableViewCell.reuseIdentifier)
     }
 
+    // Show the first snapshot with no animation.
     func applyInitialSnapshot() {
         applySnapshot(animatingDifferences: false)
     }
 
+    // Update the table when something changed.
     func applyAnimatedSnapshot() {
         applySnapshot(animatingDifferences: true)
         reloadedObjectIDs.removeAll()
     }
 
+    // Remove all rows from the snapshot to handle error state
     func applyEmptySnapshot() {
         reloadedObjectIDs.removeAll()
         var snapshot = NSDiffableDataSourceSnapshot<Int, NSManagedObjectID>()
@@ -52,10 +55,12 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
         dataSource.apply(snapshot, animatingDifferences: false)
     }
 
+    // Mark one user to be reloaded in the next snapshot.
     func reloadObject(_ user: StackOverflowUser) {
         reloadedObjectIDs.insert(user.objectID)
     }
 
+    // Build the diffable data source for the table.
     private func makeDataSource() -> UITableViewDiffableDataSource<Int, NSManagedObjectID> {
         let dataSource = UITableViewDiffableDataSource<Int, NSManagedObjectID>(tableView: tableView) { [weak self] tableView, indexPath, _ in
             guard
@@ -85,6 +90,7 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
         return dataSource
     }
 
+    // Apply the current fetched objects to the table.
     private func applySnapshot(animatingDifferences: Bool) {
         let objectIDs = fetchedResultsController.fetchedObjects?.map(\.objectID) ?? []
         var snapshot = NSDiffableDataSourceSnapshot<Int, NSManagedObjectID>()
@@ -99,10 +105,12 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
         dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
 
+    // Called when the fetched results controller finished updates.
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {
         applyAnimatedSnapshot()
     }
 
+    // Track updated objects so we can reload them.
     func controller(
         _ controller: NSFetchedResultsController<any NSFetchRequestResult>,
         didChange anObject: Any,

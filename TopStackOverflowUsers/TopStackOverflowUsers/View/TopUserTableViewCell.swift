@@ -27,6 +27,7 @@ final class TopUserTableViewCell: UITableViewCell {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // Fill the cell with one user.
     func configure(with user: StackOverflowUser, image: UIImage?, onFollowButtonTapped: @escaping () -> Void) {
         nameLabel.text = user.displayName
         reputationLabel.text = "Reputation: \(user.reputation)"
@@ -35,16 +36,14 @@ final class TopUserTableViewCell: UITableViewCell {
         updateFollowButton(isFollowed: user.isFollowed)
     }
 
+    // Clear old cell data before reuse.
     override func prepareForReuse() {
         super.prepareForReuse()
         avatarImageView.image = nil
         onFollowButtonTapped = nil
     }
 
-    func updateAvatarImage(_ image: UIImage?) {
-        avatarImageView.image = image
-    }
-
+    // Create the views used inside the cell.
     private func configureViews() {
         selectionStyle = .none
         accessoryType = .disclosureIndicator
@@ -84,6 +83,7 @@ final class TopUserTableViewCell: UITableViewCell {
         contentView.addSubview(followButton)
     }
 
+    // Add the layout constraints for the cell.
     private func configureLayout() {
         NSLayoutConstraint.activate([
             avatarImageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
@@ -99,6 +99,7 @@ final class TopUserTableViewCell: UITableViewCell {
         ])
     }
 
+    // Change the follow button title.
     private func updateFollowButton(isFollowed: Bool) {
         var configuration = followButton.configuration ?? .filled()
         configuration.title = isFollowed ? "Unfollow" : "Follow"
@@ -107,6 +108,7 @@ final class TopUserTableViewCell: UITableViewCell {
     }
 
     @objc
+    // Run the action when the button is tapped.
     private func didTapFollowButton() {
         onFollowButtonTapped?()
     }

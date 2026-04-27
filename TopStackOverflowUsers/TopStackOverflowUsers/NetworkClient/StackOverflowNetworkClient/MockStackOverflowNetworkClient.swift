@@ -8,6 +8,7 @@
 import Foundation
 
 struct MockStackOverflowNetworkClient: StackOverflowUserProviding {
+    // Return fake users for UI tests.
     func fetchTopUsers() async throws -> [TopUser] {
         [
             TopUser(
@@ -25,6 +26,7 @@ struct MockStackOverflowNetworkClient: StackOverflowUserProviding {
         ]
     }
 
+    // Return empty data because ui tests do not need real images.
     func downloadImage(from imageURLString: String) async throws -> Data {
         Data()
     }

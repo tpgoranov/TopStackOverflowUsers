@@ -26,6 +26,7 @@ final class AvatarRepository: AvatarRepositorying {
         self.networkClient = networkClient
     }
 
+    // First try to get the image from cache.
     func cachedImage(for imageURLString: String) -> UIImage? {
         if let image = memoryCache.object(forKey: imageURLString as NSString) {
             return image
@@ -42,6 +43,7 @@ final class AvatarRepository: AvatarRepositorying {
         return image
     }
 
+    // Download the image if it is not already saved.
     func fetchImage(for imageURLString: String) async throws -> UIImage? {
         if let image = cachedImage(for: imageURLString) {
             return image

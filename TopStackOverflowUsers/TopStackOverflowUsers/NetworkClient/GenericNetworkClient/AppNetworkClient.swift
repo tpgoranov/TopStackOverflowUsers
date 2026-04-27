@@ -31,6 +31,7 @@ final class AppNetworkClient: NetworkRequestPerforming {
         decoder.keyDecodingStrategy = .convertFromSnakeCase
     }
 
+    // Build a request from the endpoint values.
     func createURLRequest(from endpoint: Endpoint) throws -> URLRequest {
         var components = URLComponents(string: endpoint.urlPath)
         components?.queryItems = endpoint.queryParameters
@@ -44,6 +45,7 @@ final class AppNetworkClient: NetworkRequestPerforming {
         return urlRequest
     }
 
+    // Load json data and decode it.
     func performRequest<T: Decodable>(_ endpoint: Endpoint) async throws -> T {
         let data = try await performDataRequest(endpoint)
 
@@ -54,6 +56,7 @@ final class AppNetworkClient: NetworkRequestPerforming {
         }
     }
 
+    // Load raw data from the endpoint.
     func performDataRequest(_ endpoint: Endpoint) async throws -> Data {
         let urlRequest = try createURLRequest(from: endpoint)
         let data: Data

@@ -19,11 +19,13 @@ final class StackOverflowNetwokClient: StackOverflowUserProviding {
         self.networkClient = networkClient
     }
 
+    // Get the top users from the api.
     func fetchTopUsers() async throws -> [TopUser] {
         let response: TopUsersResponse = try await networkClient.performRequest(StackOverflowFetchEndpoint())
         return response.items
     }
 
+    // Download one profile image.
     func downloadImage(from imageURLString: String) async throws -> Data {
         try await networkClient.performDataRequest(
             StackOverflowDownloadImageEndpoint(imageURLString: imageURLString)

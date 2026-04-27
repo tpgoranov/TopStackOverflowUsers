@@ -37,6 +37,7 @@ final class TopUsersTableViewController: UITableViewController {
         super.init(coder: coder)
     }
 
+    // Set up the table screen when it opens.
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -48,12 +49,14 @@ final class TopUsersTableViewController: UITableViewController {
         viewModel.fetchDataFromRemote()
     }
 
+    // Listen for state changes from the view model.
     private func bindViewModel() {
         viewModel.onStateChanged = { [weak self] state in
             self?.render(state)
         }
     }
 
+    // Show normal content or error state.
     private func render(_ state: TopUsersViewState) {
         switch state {
         case .content:

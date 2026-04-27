@@ -14,6 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     private static let resetStoreLaunchArgument = "--ui-testing-reset-store"
 
 
+    // Handle app launch setup.
+    // Deletes PersistentContainer if passed as argument
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         if ProcessInfo.processInfo.arguments.contains(Self.resetStoreLaunchArgument) {
             resetPersistentStoreIfNeeded()
@@ -65,6 +67,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         return container
     }()
 
+    // Delete the old store when ui tests ask for clean data.
     private func resetPersistentStoreIfNeeded() {
         let container = NSPersistentContainer(name: Self.persistentStoreName)
 
@@ -94,6 +97,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     // MARK: - Core Data Saving support
 
+    // Save changes from the main context.
     func saveContext () {
         let context = persistentContainer.viewContext
         if context.hasChanges {

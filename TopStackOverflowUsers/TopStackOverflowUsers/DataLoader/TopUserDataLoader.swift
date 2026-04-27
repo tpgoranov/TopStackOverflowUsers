@@ -26,6 +26,7 @@ final class TopUsersDataLoader: TopUserDataFetching {
         self.persistentContainer = persistentContainer
     }
 
+    // Get users from network and store them in Core Data.
     func fetchTopUsers() async throws {
         let fetchedUsers = try await userProvider.fetchTopUsers()
         let context = persistentContainer.newBackgroundContext()
@@ -34,6 +35,7 @@ final class TopUsersDataLoader: TopUserDataFetching {
         }
     }
 
+    // Make the fetched results controller used by the table.
     func makeUsersFetchedResultsController() -> NSFetchedResultsController<StackOverflowUser> {
         NSFetchedResultsController(
             fetchRequest: StackOverflowUser.usersFetchRequest(),
@@ -43,6 +45,7 @@ final class TopUsersDataLoader: TopUserDataFetching {
         )
     }
 
+    // Change the follow value and save it.
     func toggleFollowState(for objectID: NSManagedObjectID) {
         let context = persistentContainer.viewContext
 
@@ -62,6 +65,7 @@ final class TopUsersDataLoader: TopUserDataFetching {
         }
     }
 
+    // Get the shared container from app delegate.
     private static func defaultPersistentContainer() -> NSPersistentContainer {
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             fatalError("AppDelegate is unavailable")
