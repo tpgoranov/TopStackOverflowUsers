@@ -107,7 +107,8 @@ final class TopUsersTableViewDataSource: NSObject, NSFetchedResultsControllerDel
 
     // Called when the fetched results controller finished updates.
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<any NSFetchRequestResult>) {
-        applyAnimatedSnapshot()
+        applySnapshot(animatingDifferences: false)
+        reloadedObjectIDs.removeAll()
     }
 
     // Track updated objects so we can reload them.

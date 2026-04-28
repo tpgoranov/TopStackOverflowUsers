@@ -21,7 +21,6 @@ final class TopUsersTableViewController: UITableViewController {
         return label
     }()
 
-    @available(*, unavailable)
     required init?(coder: NSCoder) {
         let userProvider: StackOverflowUserProviding
         if ProcessInfo.processInfo.arguments.contains("--ui-testing-mock-users") {
