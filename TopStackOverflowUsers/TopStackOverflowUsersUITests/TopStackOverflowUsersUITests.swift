@@ -33,13 +33,28 @@ final class TopStackOverflowUsersUITests: XCTestCase {
         let app = makeApp()
         app.launch()
 
-        let followButton = app.buttons["Follow"].firstMatch
+        let table = app.tables["topUsers.table"]
+        XCTAssertTrue(table.waitForExistence(timeout: 5))
+        XCTAssertEqual(table.cells.count, 2)
+
+        let nameLabels = app.staticTexts.matching(identifier: "topUser.name")
+        let reputationLabels = app.staticTexts.matching(identifier: "topUser.reputation")
+        XCTAssertEqual(nameLabels.count, 2)
+        XCTAssertEqual(reputationLabels.count, 2)
+        XCTAssertEqual(nameLabels.element(boundBy: 0).label, "Mock User One")
+        XCTAssertEqual(reputationLabels.element(boundBy: 0).label, "Reputation: 1000")
+        XCTAssertEqual(nameLabels.element(boundBy: 1).label, "Mock User Two")
+        XCTAssertEqual(reputationLabels.element(boundBy: 1).label, "Reputation: 900")
+
+        let followButton = app.buttons.matching(identifier: "topUser.followButton").firstMatch
         XCTAssertTrue(followButton.waitForExistence(timeout: 5))
+        XCTAssertEqual(followButton.label, "Follow")
 
         followButton.tap()
 
-        let unfollowButton = app.buttons["Unfollow"].firstMatch
+        let unfollowButton = app.buttons.matching(identifier: "topUser.followButton").firstMatch
         XCTAssertTrue(unfollowButton.waitForExistence(timeout: 2))
+        XCTAssertEqual(unfollowButton.label, "Unfollow")
     }
 
     @MainActor

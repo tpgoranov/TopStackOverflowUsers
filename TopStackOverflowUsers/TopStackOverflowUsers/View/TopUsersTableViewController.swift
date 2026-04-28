@@ -42,6 +42,7 @@ final class TopUsersTableViewController: UITableViewController {
         super.viewDidLoad()
 
         title = "Top StackOverflow Users"
+        tableView.accessibilityIdentifier = "topUsers.table"
         tableView.backgroundView = errorStateLabel
         bindViewModel()
         viewModel.configureDataSource(for: tableView)

@@ -9,6 +9,9 @@ import UIKit
 
 final class TopUserTableViewCell: UITableViewCell {
     static let reuseIdentifier = "TopUserTableViewCell"
+    static let nameLabelAccessibilityIdentifier = "topUser.name"
+    static let reputationLabelAccessibilityIdentifier = "topUser.reputation"
+    static let followButtonAccessibilityIdentifier = "topUser.followButton"
 
     private let avatarImageView = UIImageView()
     private let nameLabel = UILabel()
@@ -56,9 +59,11 @@ final class TopUserTableViewCell: UITableViewCell {
 
         nameLabel.font = .preferredFont(forTextStyle: .headline)
         nameLabel.numberOfLines = 0
+        nameLabel.accessibilityIdentifier = Self.nameLabelAccessibilityIdentifier
 
         reputationLabel.font = .preferredFont(forTextStyle: .subheadline)
         reputationLabel.textColor = .secondaryLabel
+        reputationLabel.accessibilityIdentifier = Self.reputationLabelAccessibilityIdentifier
 
         labelsStackView.axis = .vertical
         labelsStackView.spacing = 4
@@ -70,6 +75,7 @@ final class TopUserTableViewCell: UITableViewCell {
         followButtonConfiguration.contentInsets = NSDirectionalEdgeInsets(top: 6, leading: 10, bottom: 6, trailing: 10)
         followButton.configuration = followButtonConfiguration
         followButton.titleLabel?.font = .preferredFont(forTextStyle: .caption1)
+        followButton.accessibilityIdentifier = Self.followButtonAccessibilityIdentifier
         followButton.setContentHuggingPriority(.required, for: .horizontal)
         followButton.setContentCompressionResistancePriority(.required, for: .horizontal)
         followButton.layer.cornerRadius = 6
